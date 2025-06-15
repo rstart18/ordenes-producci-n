@@ -18,7 +18,17 @@ gradle build
 ```
 
 Esto genera los artefactos de cada módulo. El módulo `infrastructure` contiene
-una clase `MainApplication` con un ejemplo básico de ejecución.
+una clase `MainApplication` que inicia un pequeño servidor HTTP para consultar
+trabajadores.
+
+Para arrancarlo ejecute:
+
+```bash
+gradle :infrastructure:run
+```
+
+Luego podrá acceder con Postman a `http://localhost:8080/workers/{id}` para
+obtener la información de un trabajador.
 
 El registro de trabajadores se obtiene de la API pública de ReqRes.
 Cada petición envía la cabecera `x-api-key: reqres-free-v1` y está

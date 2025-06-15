@@ -1,0 +1,2 @@
+rootProject.name = 'ordenes-produccion'
+include 'domain', 'application', 'infrastructure'

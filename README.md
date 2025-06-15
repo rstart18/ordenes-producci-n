@@ -19,3 +19,7 @@ gradle build
 
 Esto genera los artefactos de cada módulo. El módulo `infrastructure` contiene
 una clase `MainApplication` con un ejemplo básico de ejecución.
+
+El registro de trabajadores se obtiene de la API pública de ReqRes.
+Cada petición envía la cabecera `x-api-key: reqres-free-v1` y está
+protegida por un Circuit Breaker básico en el módulo `infrastructure`.

@@ -95,12 +95,7 @@ public class WorkerHttpServer {
             return;
         }
 
-        String requestBody;
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8))) {
-            requestBody = reader.lines().collect(Collectors.joining());
-        }
-        JSONObject body = new JSONObject(requestBody);
+        JSONObject body = new JSONObject(new String(exchange.getRequestBody().readAllBytes()));
         String name = body.optString("name", null);
         String job = body.optString("job", null);
         if (name == null || job == null) {

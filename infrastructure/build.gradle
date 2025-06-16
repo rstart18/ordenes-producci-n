@@ -1,0 +1,13 @@
+plugins {
+    id 'application'
+}
+
+dependencies {
+    implementation project(':application')
+    implementation 'org.json:json:20220320'
+}
+
+application {
+    mainClass = 'com.example.ordenes.infrastructure.MainApplication'
+}
+

@@ -24,7 +24,6 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/MSI/Documents/projects/ordenes-producci-n",
     "node.js.detected.package.eslint": "true",
@@ -60,7 +59,7 @@
       <option name="presentableId" value="Default" />
       <updated>1750023487490</updated>
       <workItem from="1750023488641" duration="6944000" />
-      <workItem from="1750095793645" duration="457000" />
+      <workItem from="1750095793645" duration="721000" />
     </task>
     <servers />
   </component>

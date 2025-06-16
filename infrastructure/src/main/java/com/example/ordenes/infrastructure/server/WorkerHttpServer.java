@@ -6,6 +6,11 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -28,9 +33,23 @@ public class WorkerHttpServer {
      */
     public void start(int port) throws IOException {
         server = HttpServer.create(new InetSocketAddress(port), 0);
-        server.createContext("/workers", this::handleGetWorker);
+        server.createContext("/workers", this::handleWorkers);
         server.setExecutor(null);
         server.start();
+    }
+
+    private void handleWorkers(HttpExchange exchange) throws IOException {
+        switch (exchange.getRequestMethod()) {
+            case "GET":
+                handleGetWorker(exchange);
+                break;
+            case "POST":
+                handleCreateWorker(exchange);
+                break;
+            default:
+                exchange.sendResponseHeaders(405, -1);
+                exchange.close();
+        }
     }
 
     private void handleGetWorker(HttpExchange exchange) throws IOException {
@@ -68,5 +87,40 @@ public class WorkerHttpServer {
         } finally {
             exchange.close();
         }
+    }
+
+    private void handleCreateWorker(HttpExchange exchange) throws IOException {
+        if (!"POST".equals(exchange.getRequestMethod())) {
+            exchange.sendResponseHeaders(405, -1);
+            return;
+        }
+
+        String requestBody;
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8))) {
+            requestBody = reader.lines().collect(Collectors.joining());
+        }
+        JSONObject body = new JSONObject(requestBody);
+        String name = body.optString("name", null);
+        String job = body.optString("job", null);
+        if (name == null || job == null) {
+            exchange.sendResponseHeaders(400, -1);
+            exchange.close();
+            return;
+        }
+
+        Optional<Long> id = manageWorkerUseCase.create(name, job);
+        if (id.isPresent()) {
+            JSONObject responseJson = new JSONObject().put("id", id.get());
+            byte[] response = responseJson.toString().getBytes();
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.sendResponseHeaders(201, response.length);
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response);
+            }
+        } else {
+            exchange.sendResponseHeaders(502, -1);
+        }
+        exchange.close();
     }
 }

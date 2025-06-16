@@ -10,4 +10,9 @@ import java.util.Optional;
 public interface WorkerRepository {
 
     Optional<Worker> findById(Long id);
+
+    /**
+     * Crea un nuevo trabajador.
+     */
+    Optional<Long> create(String name, String job);
 }

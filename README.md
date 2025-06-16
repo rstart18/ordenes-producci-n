@@ -28,7 +28,8 @@ gradle :infrastructure:run
 ```
 
 Luego podrá acceder con Postman a `http://localhost:8080/workers/{id}` para
-obtener la información de un trabajador.
+obtener la información de un trabajador o realizar un `POST` a
+`http://localhost:8080/workers` para dar de alta uno nuevo.
 
 El registro de trabajadores se obtiene de la API pública de ReqRes.
 Cada petición envía la cabecera `x-api-key: reqres-free-v1` y está

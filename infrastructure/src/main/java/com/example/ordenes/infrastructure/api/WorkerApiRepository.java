@@ -7,6 +7,7 @@ import com.example.ordenes.infrastructure.circuit.CircuitBreaker;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Optional;
@@ -38,6 +39,15 @@ public class WorkerApiRepository implements WorkerRepository {
         }
     }
 
+    @Override
+    public Optional<Long> create(String name, String job) {
+        try {
+            return circuitBreaker.execute(() -> Optional.ofNullable(callCreateApi(name, job)));
+        } catch (RuntimeException e) {
+            return Optional.empty();
+        }
+    }
+
     private Worker callApi(Long id) {
         try {
             URL url = new URL(API_URL + id);
@@ -56,6 +66,38 @@ public class WorkerApiRepository implements WorkerRepository {
                     worker.setFirstName(json.getString("first_name"));
                     worker.setLastName(json.getString("last_name"));
                     return worker;
+                }
+            } else {
+                throw new IOException("Unexpected status: " + status);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error calling worker API", e);
+        }
+    }
+
+    private Long callCreateApi(String name, String job) {
+        try {
+            URL url = new URL(API_URL);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+            con.setRequestProperty("x-api-key", API_KEY);
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setDoOutput(true);
+
+            JSONObject payload = new JSONObject()
+                    .put("name", name)
+                    .put("job", job);
+            byte[] out = payload.toString().getBytes();
+            try (OutputStream os = con.getOutputStream()) {
+                os.write(out);
+            }
+
+            int status = con.getResponseCode();
+            if (status >= 200 && status < 300) {
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+                    String body = in.lines().collect(Collectors.joining());
+                    JSONObject json = new JSONObject(body);
+                    return Long.parseLong(json.getString("id"));
                 }
             } else {
                 throw new IOException("Unexpected status: " + status);

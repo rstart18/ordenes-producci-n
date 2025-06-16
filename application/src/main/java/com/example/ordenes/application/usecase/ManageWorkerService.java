@@ -20,4 +20,9 @@ public class ManageWorkerService implements ManageWorkerUseCase {
     public Optional<Worker> get(Long id) {
         return repository.findById(id);
     }
+
+    @Override
+    public Optional<Long> create(String name, String job) {
+        return repository.create(name, job);
+    }
 }

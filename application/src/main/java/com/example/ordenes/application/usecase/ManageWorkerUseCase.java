@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface ManageWorkerUseCase {
 
     Optional<Worker> get(Long id);
+
+    Optional<Long> create(String name, String job);
 }

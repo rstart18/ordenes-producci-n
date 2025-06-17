@@ -2,7 +2,18 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/ordenes-producci-n.iml" filepath="$PROJECT_DIR$/.idea/ordenes-producci-n.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ordenes-produccion.iml" filepath="$PROJECT_DIR$/.idea/modules/ordenes-produccion.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/application/ordenes-produccion.application.iml" filepath="$PROJECT_DIR$/.idea/modules/application/ordenes-produccion.application.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/application/ordenes-produccion.application.main.iml" filepath="$PROJECT_DIR$/.idea/modules/application/ordenes-produccion.application.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/application/ordenes-produccion.application.test.iml" filepath="$PROJECT_DIR$/.idea/modules/application/ordenes-produccion.application.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/domain/ordenes-produccion.domain.iml" filepath="$PROJECT_DIR$/.idea/modules/domain/ordenes-produccion.domain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/domain/ordenes-produccion.domain.main.iml" filepath="$PROJECT_DIR$/.idea/modules/domain/ordenes-produccion.domain.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/domain/ordenes-produccion.domain.test.iml" filepath="$PROJECT_DIR$/.idea/modules/domain/ordenes-produccion.domain.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/infrastructure/ordenes-produccion.infrastructure.iml" filepath="$PROJECT_DIR$/.idea/modules/infrastructure/ordenes-produccion.infrastructure.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/infrastructure/ordenes-produccion.infrastructure.main.iml" filepath="$PROJECT_DIR$/.idea/modules/infrastructure/ordenes-produccion.infrastructure.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/infrastructure/ordenes-produccion.infrastructure.test.iml" filepath="$PROJECT_DIR$/.idea/modules/infrastructure/ordenes-produccion.infrastructure.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ordenes-produccion.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ordenes-produccion.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ordenes-produccion.test.iml" filepath="$PROJECT_DIR$/.idea/modules/ordenes-produccion.test.iml" />
     </modules>
   </component>
 </project>

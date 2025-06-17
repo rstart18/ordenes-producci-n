@@ -1,0 +1,29 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Gradle
+.gradle/
+**/build/
+
+# Excepciones para gradle wrapper
+!gradle/wrapper/gradle-wrapper.jar
+
+# SonarLint
+.idea/sonarlint/
+.idea/modules/
+.idea/libraries/
+
+# Java class files
+*.class
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db

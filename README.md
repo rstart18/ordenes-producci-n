@@ -49,6 +49,7 @@ La respuesta de la API incluirá el identificador asignado y la fecha de creaci�
   "createdAt": "2025-06-17T02:55:31.927Z"
 }
 ```
+`http://localhost:8080/workers` para dar de alta uno nuevo.
 
 El registro de trabajadores se obtiene de la API pública de ReqRes.
 Cada petición envía la cabecera `x-api-key: reqres-free-v1` y está

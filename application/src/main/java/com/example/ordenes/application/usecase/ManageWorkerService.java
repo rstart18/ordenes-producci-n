@@ -1,6 +1,7 @@
 package com.example.ordenes.application.usecase;
 
 import com.example.ordenes.domain.model.Worker;
+import com.example.ordenes.domain.model.CreatedWorker;
 import com.example.ordenes.domain.repository.WorkerRepository;
 
 import java.util.Optional;
@@ -19,5 +20,10 @@ public class ManageWorkerService implements ManageWorkerUseCase {
     @Override
     public Optional<Worker> get(Long id) {
         return repository.findById(id);
+    }
+
+    @Override
+    public Optional<CreatedWorker> create(String name, String job) {
+        return repository.create(name, job);
     }
 }

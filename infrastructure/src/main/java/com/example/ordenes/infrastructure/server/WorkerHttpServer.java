@@ -3,6 +3,7 @@ package com.example.ordenes.infrastructure.server;
 import com.example.ordenes.application.usecase.ManageWorkerUseCase;
 import com.example.ordenes.domain.model.Worker;
 import com.example.ordenes.domain.model.CreatedWorker;
+import com.example.ordenes.domain.model.UpdatedWorker;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import org.json.JSONArray;
@@ -53,6 +54,9 @@ public class WorkerHttpServer {
                 break;
             case "POST":
                 handleCreateWorker(exchange);
+                break;
+            case "PUT":
+                handleUpdateWorker(exchange);
                 break;
             default:
                 exchange.sendResponseHeaders(405, -1);
@@ -128,6 +132,62 @@ public class WorkerHttpServer {
             byte[] response = responseJson.toString().getBytes();
             exchange.getResponseHeaders().set("Content-Type", "application/json");
             exchange.sendResponseHeaders(201, response.length);
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response);
+            }
+        } else {
+            exchange.sendResponseHeaders(502, -1);
+        }
+        exchange.close();
+    }
+
+    private void handleUpdateWorker(HttpExchange exchange) throws IOException {
+        if (!"PUT".equals(exchange.getRequestMethod())) {
+            exchange.sendResponseHeaders(405, -1);
+            return;
+        }
+
+        String path = exchange.getRequestURI().getPath();
+        String[] parts = path.split("/");
+        if (parts.length != 3) {
+            exchange.sendResponseHeaders(400, -1);
+            exchange.close();
+            return;
+        }
+
+        long id;
+        try {
+            id = Long.parseLong(parts[2]);
+        } catch (NumberFormatException e) {
+            exchange.sendResponseHeaders(400, -1);
+            exchange.close();
+            return;
+        }
+
+        String requestBody;
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8))) {
+            requestBody = reader.lines().collect(Collectors.joining());
+        }
+        JSONObject body = new JSONObject(requestBody);
+        String name = body.optString("name", null);
+        String job = body.optString("job", null);
+        if (name == null || job == null) {
+            exchange.sendResponseHeaders(400, -1);
+            exchange.close();
+            return;
+        }
+
+        Optional<UpdatedWorker> updated = manageWorkerUseCase.update(id, name, job);
+        if (updated.isPresent()) {
+            UpdatedWorker uw = updated.get();
+            JSONObject responseJson = new JSONObject()
+                    .put("name", uw.getName())
+                    .put("job", uw.getJob())
+                    .put("updatedAt", uw.getUpdatedAt());
+            byte[] response = responseJson.toString().getBytes();
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, response.length);
             try (OutputStream os = exchange.getResponseBody()) {
                 os.write(response);
             }

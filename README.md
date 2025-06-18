@@ -51,6 +51,26 @@ La respuesta de la API incluirá el identificador asignado y la fecha de creaci�
 ```
 `http://localhost:8080/workers` para dar de alta uno nuevo.
 
+Si desea modificar un trabajador existente puede realizar un `PUT` a
+`http://localhost:8080/workers/{id}` con los nuevos datos:
+
+```json
+{
+  "name": "morpheus",
+  "job": "zion resident"
+}
+```
+
+La respuesta será similar a:
+
+```json
+{
+  "name": "morpheus",
+  "job": "zion resident",
+  "updatedAt": "2025-06-18T02:50:58.315Z"
+}
+```
+
 El registro de trabajadores se obtiene de la API pública de ReqRes.
 Cada petición envía la cabecera `x-api-key: reqres-free-v1` y está
 protegida por un Circuit Breaker básico en el módulo `infrastructure`.

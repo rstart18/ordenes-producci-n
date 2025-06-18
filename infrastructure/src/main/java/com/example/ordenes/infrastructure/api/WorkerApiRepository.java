@@ -11,9 +11,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -46,6 +49,15 @@ public class WorkerApiRepository implements WorkerRepository {
             return circuitBreaker.execute(() -> Optional.ofNullable(callCreateApi(name, job)));
         } catch (RuntimeException e) {
             return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<Worker> list(int page) {
+        try {
+            return circuitBreaker.execute(() -> callListApi(page));
+        } catch (RuntimeException e) {
+            return new ArrayList<>();
         }
     }
 
@@ -104,6 +116,39 @@ public class WorkerApiRepository implements WorkerRepository {
                     cw.setJob(json.optString("job"));
                     cw.setCreatedAt(json.optString("createdAt"));
                     return cw;
+                }
+            } else {
+                throw new IOException("Unexpected status: " + status);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error calling worker API", e);
+        }
+    }
+
+    private List<Worker> callListApi(int page) {
+        try {
+            URL url = new URL(API_URL + "?page=" + page);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            con.setRequestProperty("x-api-key", API_KEY);
+
+            int status = con.getResponseCode();
+            if (status >= 200 && status < 300) {
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+                    String body = in.lines().collect(Collectors.joining());
+                    JSONObject json = new JSONObject(body);
+                    JSONArray arr = json.getJSONArray("data");
+                    List<Worker> workers = new ArrayList<>();
+                    for (int i = 0; i < arr.length(); i++) {
+                        JSONObject obj = arr.getJSONObject(i);
+                        Worker worker = new Worker();
+                        worker.setId(obj.getLong("id"));
+                        worker.setEmail(obj.getString("email"));
+                        worker.setFirstName(obj.getString("first_name"));
+                        worker.setLastName(obj.getString("last_name"));
+                        workers.add(worker);
+                    }
+                    return workers;
                 }
             } else {
                 throw new IOException("Unexpected status: " + status);

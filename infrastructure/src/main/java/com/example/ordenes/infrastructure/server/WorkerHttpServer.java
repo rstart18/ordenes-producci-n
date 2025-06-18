@@ -2,8 +2,10 @@ package com.example.ordenes.infrastructure.server;
 
 import com.example.ordenes.application.usecase.ManageWorkerUseCase;
 import com.example.ordenes.domain.model.Worker;
+import com.example.ordenes.domain.model.CreatedWorker;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -41,7 +44,12 @@ public class WorkerHttpServer {
     private void handleWorkers(HttpExchange exchange) throws IOException {
         switch (exchange.getRequestMethod()) {
             case "GET":
-                handleGetWorker(exchange);
+                String path = exchange.getRequestURI().getPath();
+                if ("/workers".equals(path) || "/workers/".equals(path)) {
+                    handleListWorkers(exchange);
+                } else {
+                    handleGetWorker(exchange);
+                }
                 break;
             case "POST":
                 handleCreateWorker(exchange);
@@ -95,7 +103,12 @@ public class WorkerHttpServer {
             return;
         }
 
-        JSONObject body = new JSONObject(new String(exchange.getRequestBody().readAllBytes()));
+        String requestBody;
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8))) {
+            requestBody = reader.lines().collect(Collectors.joining());
+        }
+        JSONObject body = new JSONObject(requestBody);
         String name = body.optString("name", null);
         String job = body.optString("job", null);
         if (name == null || job == null) {
@@ -104,9 +117,14 @@ public class WorkerHttpServer {
             return;
         }
 
-        Optional<Long> id = manageWorkerUseCase.create(name, job);
-        if (id.isPresent()) {
-            JSONObject responseJson = new JSONObject().put("id", id.get());
+        Optional<CreatedWorker> created = manageWorkerUseCase.create(name, job);
+        if (created.isPresent()) {
+            CreatedWorker cw = created.get();
+            JSONObject responseJson = new JSONObject()
+                    .put("name", cw.getName())
+                    .put("job", cw.getJob())
+                    .put("id", cw.getId())
+                    .put("createdAt", cw.getCreatedAt());
             byte[] response = responseJson.toString().getBytes();
             exchange.getResponseHeaders().set("Content-Type", "application/json");
             exchange.sendResponseHeaders(201, response.length);
@@ -115,6 +133,41 @@ public class WorkerHttpServer {
             }
         } else {
             exchange.sendResponseHeaders(502, -1);
+        }
+        exchange.close();
+    }
+
+    private void handleListWorkers(HttpExchange exchange) throws IOException {
+        int page = 1;
+        String query = exchange.getRequestURI().getQuery();
+        if (query != null) {
+            for (String part : query.split("&")) {
+                String[] kv = part.split("=");
+                if (kv.length == 2 && "page".equals(kv[0])) {
+                    try {
+                        page = Integer.parseInt(kv[1]);
+                    } catch (NumberFormatException ignore) {
+                        // default
+                    }
+                }
+            }
+        }
+
+        List<Worker> workers = manageWorkerUseCase.list(page);
+        JSONArray array = new JSONArray();
+        for (Worker w : workers) {
+            array.put(new JSONObject()
+                    .put("id", w.getId())
+                    .put("email", w.getEmail())
+                    .put("firstName", w.getFirstName())
+                    .put("lastName", w.getLastName()));
+        }
+        JSONObject responseJson = new JSONObject().put("data", array);
+        byte[] response = responseJson.toString().getBytes();
+        exchange.getResponseHeaders().set("Content-Type", "application/json");
+        exchange.sendResponseHeaders(200, response.length);
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(response);
         }
         exchange.close();
     }

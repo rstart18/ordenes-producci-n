@@ -27,3 +27,8 @@ H
 application/build.gradle,a\a\aa9cf0dce48be9892530b6983bf9282cc49f2a75
 K
 infrastructure/build.gradle,d\0\d08ad7275ca05d13cb570f6f624eee8075619a60
+Œ
+\infrastructure/src/main/java/com/example/ordenes/infrastructure/server/WorkerHttpServer.java,d\f\df874f9e75557a23b1f38a3a3ac106425dd8bd39
+:
+
+.gitignore,a\5\a5cc2925ca8258af241be7e5b0381edf30266302

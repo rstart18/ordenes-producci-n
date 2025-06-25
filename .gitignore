@@ -37,3 +37,6 @@ Thumbs.db
 
 # VS Code (por si acaso alguien lo usa también)
 .vscode/
+
+# LocalStack
+.localstack/

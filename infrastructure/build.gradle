@@ -5,6 +5,9 @@ plugins {
 dependencies {
     implementation project(':application')
     implementation 'org.json:json:20220320'
+    implementation platform('software.amazon.awssdk:bom:2.25.39')
+    implementation 'software.amazon.awssdk:dynamodb'
+    implementation 'software.amazon.awssdk:url-connection-client'
 }
 
 application {

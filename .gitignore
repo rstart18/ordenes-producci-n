@@ -1,29 +1,39 @@
+# Gradle
+.gradle/
+build/
+*/build/
+
+# Gradle Wrapper
+!gradle/wrapper/gradle-wrapper.jar
+!gradlew
+!gradlew.bat
+
 # IntelliJ IDEA
 .idea/
 *.iml
-
-# Gradle
-.gradle/
-**/build/
-
-# Excepciones para gradle wrapper
-!gradle/wrapper/gradle-wrapper.jar
+*.iws
+out/
 
 # SonarLint
 .idea/sonarlint/
 .idea/modules/
 .idea/libraries/
 
-# Java class files
+# Compiled class files
 *.class
+*.jar
+*.war
+*.ear
 
-# Logs
+# Logs and reports
 *.log
-
-# Temporary files
 *.tmp
 *.swp
+*.bak
 
-# OS files
+# OS-specific
 .DS_Store
 Thumbs.db
+
+# VS Code (por si acaso alguien lo usa también)
+.vscode/

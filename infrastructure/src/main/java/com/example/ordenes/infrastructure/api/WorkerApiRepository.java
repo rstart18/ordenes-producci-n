@@ -2,6 +2,7 @@ package com.example.ordenes.infrastructure.api;
 
 import com.example.ordenes.domain.model.Worker;
 import com.example.ordenes.domain.model.CreatedWorker;
+import com.example.ordenes.domain.model.UpdatedWorker;
 import com.example.ordenes.domain.repository.WorkerRepository;
 import com.example.ordenes.infrastructure.circuit.CircuitBreaker;
 
@@ -47,6 +48,15 @@ public class WorkerApiRepository implements WorkerRepository {
     public Optional<CreatedWorker> create(String name, String job) {
         try {
             return circuitBreaker.execute(() -> Optional.ofNullable(callCreateApi(name, job)));
+        } catch (RuntimeException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<UpdatedWorker> update(Long id, String name, String job) {
+        try {
+            return circuitBreaker.execute(() -> Optional.ofNullable(callUpdateApi(id, name, job)));
         } catch (RuntimeException e) {
             return Optional.empty();
         }
@@ -116,6 +126,42 @@ public class WorkerApiRepository implements WorkerRepository {
                     cw.setJob(json.optString("job"));
                     cw.setCreatedAt(json.optString("createdAt"));
                     return cw;
+                }
+            } else {
+                throw new IOException("Unexpected status: " + status);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error calling worker API", e);
+        }
+    }
+
+    private UpdatedWorker callUpdateApi(Long id, String name, String job) {
+        try {
+            URL url = new URL(API_URL + id);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("PUT");
+            con.setRequestProperty("x-api-key", API_KEY);
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setDoOutput(true);
+
+            JSONObject payload = new JSONObject()
+                    .put("name", name)
+                    .put("job", job);
+            byte[] out = payload.toString().getBytes();
+            try (OutputStream os = con.getOutputStream()) {
+                os.write(out);
+            }
+
+            int status = con.getResponseCode();
+            if (status >= 200 && status < 300) {
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+                    String body = in.lines().collect(Collectors.joining());
+                    JSONObject json = new JSONObject(body);
+                    UpdatedWorker uw = new UpdatedWorker();
+                    uw.setName(json.optString("name"));
+                    uw.setJob(json.optString("job"));
+                    uw.setUpdatedAt(json.optString("updatedAt"));
+                    return uw;
                 }
             } else {
                 throw new IOException("Unexpected status: " + status);

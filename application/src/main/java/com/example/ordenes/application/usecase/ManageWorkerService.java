@@ -3,6 +3,7 @@ package com.example.ordenes.application.usecase;
 import com.example.ordenes.domain.model.Worker;
 import com.example.ordenes.domain.model.CreatedWorker;
 import com.example.ordenes.domain.repository.WorkerRepository;
+import com.example.ordenes.domain.model.UpdatedWorker;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,11 @@ public class ManageWorkerService implements ManageWorkerUseCase {
     @Override
     public Optional<CreatedWorker> create(String name, String job) {
         return repository.create(name, job);
+    }
+
+    @Override
+    public Optional<UpdatedWorker> update(Long id, String name, String job) {
+        return repository.update(id, name, job);
     }
 
     @Override
